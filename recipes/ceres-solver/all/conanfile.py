@@ -120,7 +120,7 @@ class CeressolverConan(ConanFile):
 
     def build_requirements(self):
         if Version(self.version) >= "2.2.0":
-            self.tool_requires("cmake/[>=3.16 <4]")
+            self.tool_requires("cmake/[>=3.21]")
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
@@ -141,9 +141,9 @@ class CeressolverConan(ConanFile):
 
         ceres_version = Version(self.version)
         if ceres_version >= "2.2.0":
-            tc.variables["USE_CUDA"] = False
+            tc.variables["USE_CUDA"] = True
         elif ceres_version >= "2.1.0":
-            tc.variables["CUDA"] = False
+            tc.variables["CUDA"] = True
         if ceres_version >= "2.2.0":
             tc.variables["EIGENMETIS"] = False
         if ceres_version >= "2.0.0":
