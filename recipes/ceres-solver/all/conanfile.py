@@ -37,6 +37,7 @@ class CeressolverConan(ConanFile):
         "use_CXX11_threads": [True, False],
         "use_CXX11": [True, False],
         "use_schur_specializations": [True, False],
+        "use_cuda": [True, False],
     }
     default_options = {
         "shared": False,
@@ -49,6 +50,7 @@ class CeressolverConan(ConanFile):
         "use_CXX11_threads": False,
         "use_CXX11": False,
         "use_schur_specializations": True,
+        "use_cuda": False,
     }
 
     @property
@@ -141,9 +143,9 @@ class CeressolverConan(ConanFile):
 
         ceres_version = Version(self.version)
         if ceres_version >= "2.2.0":
-            tc.variables["USE_CUDA"] = True
+            tc.variables["USE_CUDA"] = self.options.use_cuda
         elif ceres_version >= "2.1.0":
-            tc.variables["CUDA"] = True
+            tc.variables["CUDA"] = self.options.use_cuda
         if ceres_version >= "2.2.0":
             tc.variables["EIGENMETIS"] = False
         if ceres_version >= "2.0.0":
@@ -211,6 +213,8 @@ class CeressolverConan(ConanFile):
             libsuffix = "-debug"
         # TODO: back to global scope in conan v2 once cmake_find_package* generators removed
         self.cpp_info.components["ceres"].libs = [f"ceres{libsuffix}"]
+        if self.options.use_cuda:
+            self.cpp_info.components["ceres"].libs.append(f"ceres_cuda_kernels{libsuffix}")
         self.cpp_info.components["ceres"].includedirs.append(os.path.join("include", "ceres"))
         if not self.options.use_glog:
             self.cpp_info.components["ceres"].includedirs.append(os.path.join("include", "ceres", "internal", "miniglog"))
